@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contact;
+use App\Models\SharedContact;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class PersonController extends Controller
+class ContactController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,7 +18,19 @@ class PersonController extends Controller
      */
     public function index()
     {
-        //
+        $contacts = Contact::query()->where('user_id', '=', Auth::user()->id)->get();
+        $activeContacts = Contact::query()->where('active', '=', 'active')->get();
+        $sharedContacts = DB::table('shared_contacts')
+            ->where('user_to_id', '=', Auth::user()->id)
+            ->rightJoin('contacts', 'shared_contacts.contact_id', '=', 'contacts.id')
+            ->get();
+
+
+        return view('contacts.contact-index', [
+            'contacts'       => $contacts,
+            'activeContacts' => $activeContacts,
+            'test' => $sharedContacts
+        ]);
     }
 
     /**
@@ -23,7 +40,7 @@ class PersonController extends Controller
      */
     public function create()
     {
-        //
+        return view('contacts.contact-create');
     }
 
     /**
@@ -34,7 +51,24 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $contact = new Contact();
+        $contact->name = $request->get('name');
+        $contact->surname = $request->get('surname');
+        $contact->phone = $request->get('phone');
+        $contact->description = $request->get('description');
+        $contact->user_id = Auth::user()->id;
+
+        if (User::query()->where('phone', $request->get('phone'))->get()->isEmpty()) {
+            $contact->active =  Contact::STATUS_INACTIVE;
+        } else {
+            $contact->active =  Contact::STATUS_ACTIVE;
+        }
+
+
+        $contact->save();
+
+        return redirect(route('contacts.index'));
+
     }
 
     /**

@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SharedContact;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class GroupController extends Controller
+class ShareController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +38,22 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $sharedContact = new SharedContact();
+        $sharedContact->user_id = Auth::user()->id;
+
+
+        $sharedContact->contact_id = $request->get('contact');
+
+
+        $phone = $request->get('user_to_phone');
+
+        $toUSer = User::query()->where('phone', '=', $phone)->pluck('id')->first();
+        $sharedContact->user_to_id = $toUSer;
+        $sharedContact->save();
+
+        return redirect(route('contacts.index'));
+
     }
 
     /**

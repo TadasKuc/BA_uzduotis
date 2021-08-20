@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ShareController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,3 +24,6 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';
+
+Route::resource('/contacts', ContactController::class);
+Route::resource('/share', ShareController::class);
