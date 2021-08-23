@@ -2,117 +2,93 @@
 
 namespace App\Http\Controllers;
 
+use App\Managers\ContactManager;
 use App\Models\Contact;
-use App\Models\SharedContact;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ContactController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * ContactController constructor.
      */
+    public function __construct(private ContactManager $contactManager)
+    {
+    }
+
+
     public function index()
     {
         $contacts = Contact::query()->where('user_id', '=', Auth::user()->id)->get();
-        $activeContacts = Contact::query()->where('active', '=', 'active')->get();
-        $sharedContacts = DB::table('shared_contacts')
-            ->where('user_to_id', '=', Auth::user()->id)
-            ->rightJoin('contacts', 'shared_contacts.contact_id', '=', 'contacts.id')
-            ->get();
 
+        $activeContacts = $this->contactManager->getActiveContacts();
 
-        return view('contacts.contact-index', [
-            'contacts'       => $contacts,
-            'activeContacts' => $activeContacts,
-            'test' => $sharedContacts
+        $sharedContacts = $this->contactManager->getSharedContacts();
+
+        $contactsYouShared = $this->contactManager->getContactsYouShared();
+
+        return view('contacts', [
+            'contacts'          => $contacts,
+            'activeContacts'    => $activeContacts,
+            'sharedContacts'    => $sharedContacts,
+            'contactsYouShared' => $contactsYouShared
+
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
+
         return view('contacts.contact-create');
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-        $contact = new Contact();
-        $contact->name = $request->get('name');
-        $contact->surname = $request->get('surname');
-        $contact->phone = $request->get('phone');
-        $contact->description = $request->get('description');
-        $contact->user_id = Auth::user()->id;
 
-        if (User::query()->where('phone', $request->get('phone'))->get()->isEmpty()) {
-            $contact->active =  Contact::STATUS_INACTIVE;
-        } else {
-            $contact->active =  Contact::STATUS_ACTIVE;
-        }
-
-
-        $contact->save();
+        $this->contactManager->store($request);
 
         return redirect(route('contacts.index'));
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+
+    public function show(Contact $contact)
     {
-        //
+
+        return view('contacts.contact-show', [
+            'contact' =>$contact
+        ]);
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+
+    public function edit(Contact $contact)
     {
-        //
+
+        return view('contacts.contact-edit', $contact);
+
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+
+    public function update(Request $request, Contact $contact)
     {
-        //
+
+        $this->contactManager->update($request, $contact);
+
+        return redirect(route('contacts.index'));
+
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+
+    public function destroy(Contact $contact)
     {
-        //
+
+        $this->contactManager->destroy($contact);
+
+        return redirect(route('contacts.index'));
+
     }
 }

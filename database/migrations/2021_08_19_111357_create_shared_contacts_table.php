@@ -15,7 +15,7 @@ class CreateSharedContactsTable extends Migration
     {
         Schema::create('shared_contacts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable(false);
+            $table->unsignedBigInteger('user_from_id')->nullable(false);
             $table->unsignedBigInteger('user_to_id')->nullable(false);
             $table->unsignedBigInteger('contact_id')->nullable(false);
             $table->timestamps();
