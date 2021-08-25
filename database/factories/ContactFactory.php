@@ -28,6 +28,7 @@ class ContactFactory extends Factory
             'surname' => $this->faker->lastName(),
             'phone' => $this->faker->unique()->numberBetween(800000000, 999999999),
             'description' => $this->faker->text(55),
+            'active' => $this->faker->randomElement(Contact::STATUS),
         ];
     }
 }

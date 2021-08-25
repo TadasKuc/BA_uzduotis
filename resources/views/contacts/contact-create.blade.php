@@ -10,7 +10,7 @@
                 <div class="col-md-10">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="section-heading">
-                            <h2>Pridėti naują automobilį</h2>
+                            <h2>Pridėti kontakta</h2>
                         </div>
                     </div>
                     <div class="contact-form">
