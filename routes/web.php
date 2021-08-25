@@ -25,5 +25,5 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
-Route::resource('/contacts', ContactController::class);
-Route::resource('/share', ShareController::class);
+Route::resource('/contacts', ContactController::class)->middleware(['auth']);
+Route::resource('/share', ShareController::class)->middleware(['auth']);
