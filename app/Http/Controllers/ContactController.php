@@ -8,6 +8,7 @@ use App\Models\SharedContact;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use phpDocumentor\Reflection\Types\Boolean;
 use phpDocumentor\Reflection\Types\Null_;
 
 class ContactController extends Controller
@@ -60,19 +61,26 @@ class ContactController extends Controller
     }
 
 
-    public function show(Contact $contact)
+    public function show(Contact $contact, Request $request)
     {
         $actions = true;
         $cancel = false;
+//        dd($request->get('youShared'));
 // apsaugoti kad kitas vartotojas negaletu matyti jam nepriklausanciu irasu
 // $actions and cancel kintamuosiu pervadinti, naudoti tik vien kintamaji?
 //
-        if (\request('type' ) === 'shared'){
+
+
+        if ($request->get('youShared') === '0'){
             $contact = $this->contactManager->getSharedContacts()->where('id', '=' , $contact->id)->first();
             $actions = false;
-        } elseif (\request('type') === 'youShared') {
+        } elseif ($request->get('youShared') === '1') {
             $contact = $this->contactManager->getContactsYouShared()->where('id', '=' , $contact->id)->first();
             $cancel = true;
+        }
+
+        if (is_null($request->get('youShared')) and $contact->user_id != Auth::user()->id){
+            return;
         }
 
         return view('contacts.contact-show', [
