@@ -60,7 +60,7 @@
                                 <tr>
 
                                     <th scope="row">{{$key+1}}</th>
-                                    <td><a href="{{ route('contacts.show' , ['contact' => $sharedcontact]) }}?type=shared">{{$sharedcontact->name}}</a></td>
+                                    <td><a href="{{ route('contacts.show' , ['contact' => $sharedcontact, 'youShared' => false]) }}">{{$sharedcontact->name}}</a></td>
                                     <td>{{$sharedcontact->surname}}</td>
                                     <td>{{$sharedcontact->phone}}</td>
 
@@ -90,7 +90,7 @@
                             @foreach($contactsYouShared as $key => $contactYouShared)
                                     <tr>
                                         <th scope="row">{{$key+1}}</th>
-                                        <td><a href="{{ route('contacts.show' , ['contact' => $contactYouShared->id,]) }}?type=youShared">{{$contactYouShared->name}}</a></td>
+                                        <td><a href="{{ route('contacts.show' , ['contact' => $contactYouShared->id,'youShared' => true ]) }}">{{$contactYouShared->name}}</a></td>
                                         <td>{{$contactYouShared->surname}}</td>
                                         <td>{{$contactYouShared->phone}}</td>
                                     </tr>

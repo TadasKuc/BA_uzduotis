@@ -9,7 +9,6 @@
                 <div class="col-md-10">
                      <div class="card col-lg-12 col-md-12 col-sm-12">
                         <div class="card-body">
-{{--                            {{dd($contact)}}--}}
 
                             <h5 class="card-title">{{$contact->name}}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{$contact->surname}}</h6>
