@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Managers\ContactManager;
 use App\Models\Contact;
+use App\Models\SharedContact;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use phpDocumentor\Reflection\Types\Null_;
 
 class ContactController extends Controller
 {
@@ -19,7 +22,9 @@ class ContactController extends Controller
 
     public function index()
     {
-        $contacts = Contact::query()->where('user_id', '=', Auth::user()->id)->get();
+        $contacts = Contact::query()
+            ->where('user_id', '=', Auth::user()->id)
+            ->get();
 
         $activeContacts = $this->contactManager->getActiveContacts();
 
@@ -32,8 +37,8 @@ class ContactController extends Controller
             'activeContacts'    => $activeContacts,
             'sharedContacts'    => $sharedContacts,
             'contactsYouShared' => $contactsYouShared
-
         ]);
+
     }
 
 
@@ -57,9 +62,24 @@ class ContactController extends Controller
 
     public function show(Contact $contact)
     {
+        $actions = true;
+        $cancel = false;
+// apsaugoti kad kitas vartotojas negaletu matyti jam nepriklausanciu irasu
+// $actions and cancel kintamuosiu pervadinti, naudoti tik vien kintamaji?
+//
+        if (\request('type' ) === 'shared'){
+            $contact = $this->contactManager->getSharedContacts()->where('id', '=' , $contact->id)->first();
+            $actions = false;
+        } elseif (\request('type') === 'youShared') {
+            $contact = $this->contactManager->getContactsYouShared()->where('id', '=' , $contact->id)->first();
+            $cancel = true;
+        }
 
         return view('contacts.contact-show', [
-            'contact' =>$contact
+            'contact' => $contact,
+            'activeContacts' => $this->contactManager->getActiveContacts(),
+            'actions' => $actions,
+            'cancel' => $cancel
         ]);
 
     }
@@ -85,10 +105,10 @@ class ContactController extends Controller
 
     public function destroy(Contact $contact)
     {
-
         $this->contactManager->destroy($contact);
 
         return redirect(route('contacts.index'));
 
     }
+
 }

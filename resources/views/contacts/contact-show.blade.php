@@ -9,10 +9,13 @@
                 <div class="col-md-10">
                      <div class="card col-lg-12 col-md-12 col-sm-12">
                         <div class="card-body">
+{{--                            {{dd($contact)}}--}}
+
                             <h5 class="card-title">{{$contact->name}}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{$contact->surname}}</h6>
                             <h6 class="card-subtitle mb-2 text-muted">{{$contact->phone}}</h6>
                             <p class="card-text">{{$contact->description}}</p>
+                            @if($actions)
                             <div style="display: flex;">
                                 <a href="{{ route('contacts.edit', $contact->id) }}" class="card-link btn btn-info mr-1">Redaguoti</a>
                                 <form action="{{ route('contacts.destroy' , ['contact' => $contact->id]) }}" method="POST">
@@ -21,19 +24,36 @@
                                     <input class="card-link btn btn-danger" type="Submit" value="Trinti kontaktą">
                                 </form>
                             </div>
+                            <form action="{{ route('share.store' , ['contact' => $contact->id]) }}" method="POST">
+                                @csrf
+                                <fieldset>
+                                    <select name="user_to_phone" class="form-control" id="user_to_phone"  required="">
+                                        <option>Dalintis kontatku su...</option>
+                                        @foreach($activeContacts as $active)
+                                            <option value="{{$active->phone}}">{{$active->name . '-' . $active->surname}}</option>
+                                        @endforeach
+                                    </select>
+                                </fieldset>
+                                <input class="btn btn-outline-info mb-3 mt-1" type="Submit" value="Dalintis kontaktu">
+                            </form>
+                            @else
+                                Kontaktu pasidalino {{$contact->Name}}
+                                <form action="{{ route('share.destroy' , $contact->Id) }}" method="POST">
+                                    @method('DELETE')
+                                    @csrf
+                                    <input class="card-link btn btn-danger" type="Submit" value="Ištrinti gautą kontaktą">
+                                </form>
+                            @endif
                         </div>
-                         <form action="{{ route('share.store' , ['contact' => $contact->id]) }}" method="POST">
-                             @csrf
-                             <fieldset>
-                                 <select name="user_to_phone" class="form-control" id="user_to_phone"  required="">
-                                     <option>Dalintis kontatku su...</option>
-                                     @foreach($activeContacts as $active)
-                                         <option value="{{$active->phone}}">{{$active->name . '-' . $active->surname}}</option>
-                                     @endforeach
-                                 </select>
-                             </fieldset>
-                             <input class="btn btn-outline-info mb-3 mt-1" type="Submit" value="Dalintis kontaktu">
-                         </form>
+                         @if($cancel)
+                             <form action="{{ route('share.destroy' , $contact->Id) }}" method="POST">
+                                 @method('DELETE')
+                                 @csrf
+                                 <input class="card-link btn btn-danger" type="Submit" value="Atsaukti dalinimasi">
+                             </form>
+                         @else
+
+                         @endif
                     </div>
                 </div>
             </div>

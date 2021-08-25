@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\Models\Contact;
+use App\Models\SharedContact;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -39,8 +40,9 @@ class ContactRepository
 
     public function destroy(Contact $contact)
     {
-
-        $contact->delete();
+        if (!$this->contactIsShared($contact->id)) {
+            $contact->delete();
+        }
 
     }
 
@@ -57,10 +59,11 @@ class ContactRepository
     public function getSharedContacts(): Collection
     {
 
-        return DB::table('shared_contacts')
+        return SharedContact::query()
             ->where('user_to_id', '=', Auth::user()->id)
             ->rightJoin('contacts', 'shared_contacts.contact_id', '=', 'contacts.id')
-            ->get();
+            ->rightJoin('users as u', 'u.id', '=', 'shared_contacts.user_from_id')
+            ->get(['u.Name', 'contacts.*', 'shared_contacts.Id', 'shared_contacts.user_from_id', 'shared_contacts.user_to_id', 'shared_contacts.contact_id']);
 
     }
 
@@ -71,7 +74,7 @@ class ContactRepository
             ->where('user_from_id', '=', Auth::user()->id)
             ->rightJoin('contacts as c', 'c.id', '=', 'sc.contact_id')
             ->rightJoin('users as u', 'u.id', '=', 'sc.user_to_id')
-            ->get(['u.Name', 'c.*']);
+            ->get(['u.Name', 'c.*', 'sc.Id', 'sc.user_from_id', 'sc.user_to_id', 'sc.contact_id']);
 
     }
 
@@ -83,6 +86,12 @@ class ContactRepository
         } else {
             return Contact::STATUS_ACTIVE;
         }
+
+    }
+
+    public function contactIsShared($id)
+    {
+        return SharedContact::query()->where('contact_id', '=', $id)->exists();
 
     }
 }
