@@ -63,31 +63,25 @@ class ContactController extends Controller
 
     public function show(Contact $contact, Request $request)
     {
-        $actions = true;
-        $cancel = false;
-//        dd($request->get('youShared'));
-// apsaugoti kad kitas vartotojas negaletu matyti jam nepriklausanciu irasu
-// $actions and cancel kintamuosiu pervadinti, naudoti tik vien kintamaji?
-//
 
+        $contactType = 'userContacts';
 
         if ($request->get('youShared') === '0'){
             $contact = $this->contactManager->getSharedContacts()->where('id', '=' , $contact->id)->first();
-            $actions = false;
-        } elseif ($request->get('youShared') === '1') {
+            $contactType = 'userGetContacts';
+        } elseif ($request->get('youShared') === '1'){
             $contact = $this->contactManager->getContactsYouShared()->where('id', '=' , $contact->id)->first();
-            $cancel = true;
+            $contactType = 'userSendContacts';
         }
 
-        if (is_null($request->get('youShared')) and $contact->user_id != Auth::user()->id){
+        if (is_null($request->get('youShared')) && $contact->user_id != Auth::user()->id){
             return;
         }
 
         return view('contacts.contact-show', [
             'contact' => $contact,
             'activeContacts' => $this->contactManager->getActiveContacts(),
-            'actions' => $actions,
-            'cancel' => $cancel
+            'contactType' => $contactType
         ]);
 
     }

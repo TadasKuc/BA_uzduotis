@@ -14,7 +14,8 @@
                             <h6 class="card-subtitle mb-2 text-muted">{{$contact->surname}}</h6>
                             <h6 class="card-subtitle mb-2 text-muted">{{$contact->phone}}</h6>
                             <p class="card-text">{{$contact->description}}</p>
-                            @if($actions)
+
+                            @if($contactType === 'userContacts' || $contactType === 'userSendContacts')
                             <div style="display: flex;">
                                 <a href="{{ route('contacts.edit', $contact->id) }}" class="card-link btn btn-info mr-1">Redaguoti</a>
                                 <form action="{{ route('contacts.destroy' , ['contact' => $contact->id]) }}" method="POST">
@@ -23,6 +24,7 @@
                                     <input class="card-link btn btn-danger" type="Submit" value="Trinti kontaktą">
                                 </form>
                             </div>
+
                             <form action="{{ route('share.store' , ['contact' => $contact->id]) }}" method="POST">
                                 @csrf
                                 <fieldset>
@@ -35,7 +37,8 @@
                                 </fieldset>
                                 <input class="btn btn-outline-info mb-3 mt-1" type="Submit" value="Dalintis kontaktu">
                             </form>
-                            @else
+
+                            @elseif ($contactType === 'userGetContacts')
                                 Kontaktu pasidalino {{$contact->Name}}
                                 <form action="{{ route('share.destroy' , $contact->Id) }}" method="POST">
                                     @method('DELETE')
@@ -44,7 +47,8 @@
                                 </form>
                             @endif
                         </div>
-                         @if($cancel)
+
+                         @if($contactType === 'userSendContacts')
                              <form action="{{ route('share.destroy' , $contact->Id) }}" method="POST">
                                  @method('DELETE')
                                  @csrf
