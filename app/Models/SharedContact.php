@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class SharedContact extends Model
 {
     use HasFactory;
+
+    private mixed $user_to_id;
 }

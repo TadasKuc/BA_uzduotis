@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Managers\ShareContactManager;
 use App\Models\SharedContact;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,6 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ShareController extends Controller
 {
+    /**
+     * ShareController constructor.
+     */
+    public function __construct(private ShareContactManager $manager)
+    {
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -19,13 +26,7 @@ class ShareController extends Controller
     public function store(Request $request)
     {
 
-        $sharedContact = new SharedContact();
-        $sharedContact->user_from_id = Auth::user()->id;
-        $sharedContact->contact_id = $request->get('contact');
-        $phone = $request->get('user_to_phone');
-        $toUser = User::query()->where('phone', '=', $phone)->pluck('id')->first();
-        $sharedContact->user_to_id = $toUser;
-        $sharedContact->save();
+        $this->manager->store($request);
 
         return redirect(route('contacts.index'));
 
@@ -40,9 +41,10 @@ class ShareController extends Controller
      */
     public function destroy($id)
     {
-        $shared_contact = SharedContact::query()->find($id);
 
-        $shared_contact->delete();
+        $this->manager->destroy($id);
+
+        return redirect(route('contacts.index'));
 
     }
 }

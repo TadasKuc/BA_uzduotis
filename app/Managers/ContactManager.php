@@ -13,13 +13,14 @@ class ContactManager
     /**
      * ContactManager constructor.
      */
-    public function __construct(private ContactRepository $repository)
+    public function __construct(private ContactRepository $repository,
+                                private ValidateRequestManager $validator)
     {
     }
 
     public function store($request)
     {
-        $this->validateContactRequest($request);
+        $this->validator->validateContactRequest($request);
 
         $this->repository->store($request);
     }
@@ -55,12 +56,4 @@ class ContactManager
 
     }
 
-    public function validateContactRequest()
-    {
-
-        return request()->validate([
-            'name' => ['required', 'min:2', 'max:30']
-        ]);
-
-    }
 }
