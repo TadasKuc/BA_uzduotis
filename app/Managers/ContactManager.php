@@ -20,14 +20,14 @@ class ContactManager
 
     public function store($request)
     {
-        $this->validator->validateContactRequest($request);
+        $this->validator->validateContactRequest();
 
         $this->repository->store($request);
     }
 
     public function update(Request $request, Contact $contact)
     {
-        $this->validateContactRequest($request);
+        $this->validator->validateContactRequest();
 
         $this->repository->update($request, $contact);
     }

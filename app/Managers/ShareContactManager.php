@@ -21,7 +21,7 @@ class ShareContactManager
     public function store(Request $request)
     {
 
-        $this->validator->validateSharedContactRequest($request);
+        $this->validator->validateSharedContactRequest();
 
         $this->repository->store($request);
 

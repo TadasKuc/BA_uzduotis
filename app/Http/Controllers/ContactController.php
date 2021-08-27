@@ -4,12 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Managers\ContactManager;
 use App\Models\Contact;
-use App\Models\SharedContact;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use phpDocumentor\Reflection\Types\Boolean;
-use phpDocumentor\Reflection\Types\Null_;
 
 class ContactController extends Controller
 {
@@ -75,7 +71,7 @@ class ContactController extends Controller
         }
 
         if (is_null($request->get('youShared')) && $contact->user_id != Auth::user()->id){
-            return;
+            return redirect(route('contacts.index'));
         }
 
         return view('contacts.contact-show', [

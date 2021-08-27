@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <a href="{{route('contacts.create')}}">Pridėti</a>
-        <a href="{{route('contacts.create')}}">Pridėti</a>
-        <a href="{{route('contacts.create')}}">Pridėti</a>
+        <a href="#">Gauti kontaktai</a>
+        <a href="#">Išsiųsti kontaktai</a>
 
     </x-slot>
     <div class="">
